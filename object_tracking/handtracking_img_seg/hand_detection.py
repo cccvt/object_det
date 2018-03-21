@@ -3,16 +3,24 @@ import numpy as np
 import time
 import datetime
 
-# Open Camera object
-cap = cv2.VideoCapture(0)
 
-# Decrease frame size
-cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1000)
-cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 600)
+class HSVTrackBar(object):
+    def __init__(self):
+        # Creating a window for HSV track bars
+        cv2.namedWindow('HSV_TrackBar')
 
+        # Starting with 100's to prevent error while masking
+        self.vals = {'h' : 2,
+                     's' : 50,
+                     'v' : 50}
 
-def nothing(x):
-    pass
+        # Creating track bar
+        cv2.createTrackbar('h', 'HSV_TrackBar', 2, 15, lambda x: self.getVal(x, 'h'))
+        cv2.createTrackbar('s', 'HSV_TrackBar', 50, 255, lambda x: self.getVal(x, 's'))
+        cv2.createTrackbar('v', 'HSV_TrackBar', 50, 255, lambda x: self.getVal(x, 'v'))
+
+    def getVal(self, x, valStr):
+        self.vals[valStr] = x
 
 
 # Function to find angle between two vectors
@@ -30,180 +38,204 @@ def FindDistance(A, B):
     return np.sqrt(np.power((A[0][0] - B[0][0]), 2) + np.power((A[0][1] - B[0][1]), 2))
 
 
-# Creating a window for HSV track bars
-cv2.namedWindow('HSV_TrackBar')
+def noContoursDetected():
+    font = cv2.FONT_HERSHEY_SIMPLEX
+    font_scale = 1.5
+    thickness = 1
 
-# Starting with 100's to prevent error while masking
-h, s, v = 100, 100, 100
+    size = cv2.getTextSize('Nothing detected!', font, font_scale, thickness)[0]
+    blank_image = np.zeros((size[1]*2, size[0], 3), np.uint8)
+    print size
+    cv2.putText(blank_image, 'Nothing detected!', (0, size[1]+size[1]/2), font, font_scale, (0, 0, 255), thickness)
+    return blank_image
 
-# Creating track bar
-cv2.createTrackbar('h', 'HSV_TrackBar', 0, 179, nothing)
-cv2.createTrackbar('s', 'HSV_TrackBar', 0, 255, nothing)
-cv2.createTrackbar('v', 'HSV_TrackBar', 0, 255, nothing)
 
-num_frames = 0
-fps_start = time.time()
+if __name__ == '__main__':
+    # Open Camera object
+    cap = cv2.VideoCapture(0)
 
-while True:
+    # Decrease frame size
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1000)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 600)
 
-    # Measure execution time
-    start_time = time.time()
 
-    # Capture frames from the camera
-    ret, frame = cap.read()
+    trackBar = HSVTrackBar()
+    blankImage = noContoursDetected()
+    num_frames = 0
+    fps_start = time.time()
 
-    # Blur the image
-    blur = cv2.blur(frame, (3, 3))
+    while True:
 
-    # Convert to HSV color space
-    hsv = cv2.cvtColor(blur, cv2.COLOR_BGR2HSV)
+        # Measure execution time
+        start_time = time.time()
 
-    # Create a binary image with where white will be skin colors and rest is black
-    mask2 = cv2.inRange(hsv, np.array([2, 50, 50]), np.array([15, 255, 255]))
+        # Capture frames from the camera
+        _, frame = cap.read()
 
-    # Kernel matrices for morphological transformation
-    kernel_square = np.ones((11, 11), np.uint8)
-    kernel_ellipse = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))
+        # Blur the image
+        blur = cv2.blur(frame, (3, 3))
 
-    # Perform morphological transformations to filter out the background noise
-    # Dilation increase skin color area
-    # Erosion increase skin color area
-    dilation = cv2.dilate(mask2, kernel_ellipse, iterations=1)
-    erosion = cv2.erode(dilation, kernel_square, iterations=1)
-    dilation2 = cv2.dilate(erosion, kernel_ellipse, iterations=1)
-    filtered = cv2.medianBlur(dilation2, 5)
-    kernel_ellipse = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (8, 8))
-    dilation2 = cv2.dilate(filtered, kernel_ellipse, iterations=1)
-    kernel_ellipse = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))
-    dilation3 = cv2.dilate(filtered, kernel_ellipse, iterations=1)
-    median = cv2.medianBlur(dilation2, 5)
-    ret, thresh = cv2.threshold(median, 127, 255, 0)
+        # Convert to HSV color space
+        hsv = cv2.cvtColor(blur, cv2.COLOR_BGR2HSV)
 
-    # Find contours of the filtered frame
-    _, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        # Create a binary image with where white will be skin colors and rest is black
+        # mask2 = cv2.inRange(hsv, np.array([2, 50, 50]), np.array([15, 255, 255]))
+        h = trackBar.vals['h']
+        s = trackBar.vals['s']
+        v = trackBar.vals['v']
+        mask2 = cv2.inRange(hsv, np.array([h, s, v]), np.array([15, 255, 255]))
 
-    # Draw Contours
-    # cv2.drawContours(frame, cnt, -1, (122,122,0), 3)
-    # cv2.imshow('Dilation',median)
+        # Kernel matrices for morphological transformation
+        kernel_square = np.ones((11, 11), np.uint8)
+        kernel_ellipse = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))
 
-    # Find Max contour area (Assume that hand is in the frame)
-    max_area = 100
-    ci = 0
-    for i in range(len(contours)):
-        cnt = contours[i]
-        area = cv2.contourArea(cnt)
-        if (area > max_area):
-            max_area = area
-            ci = i
+        # Perform morphological transformations to filter out the background noise
+        # Dilation increase skin color area
+        # Erosion increase skin color area
+        dilation = cv2.dilate(mask2, kernel_ellipse, iterations=1)
+        erosion = cv2.erode(dilation, kernel_square, iterations=1)
+        dilation2 = cv2.dilate(erosion, kernel_ellipse, iterations=1)
+        filtered = cv2.medianBlur(dilation2, 5)
+        kernel_ellipse = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (8, 8))
+        dilation2 = cv2.dilate(filtered, kernel_ellipse, iterations=1)
+        kernel_ellipse = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))
+        dilation3 = cv2.dilate(filtered, kernel_ellipse, iterations=1)
+        median = cv2.medianBlur(dilation2, 5)
+        _, thresh = cv2.threshold(median, 127, 255, 0)
+
+        # Find contours of the filtered frame
+        _, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+
+        # Draw Contours
+        cv2.drawContours(frame, contours, -1, (122,122,0), 3)
+        cv2.imshow('HSV_TrackBar', median)
+
+        # Find Max contour area (Assume that hand is in the frame)
+        max_area = 100
+        ci = 0
+        for i in range(len(contours)):
+            cnt = contours[i]
+            area = cv2.contourArea(cnt)
+            if (area > max_area):
+                max_area = area
+                ci = i
 
         # Largest area contour
-    cnts = contours[ci]
-
-    # Find convex hull
-    hull = cv2.convexHull(cnts)
-
-    # Find convex defects
-    hull2 = cv2.convexHull(cnts, returnPoints=False)
-    defects = cv2.convexityDefects(cnts, hull2)
-
-    # Get defect points and draw them in the original image
-    FarDefect = []
-    for i in range(defects.shape[0]):
-        s, e, f, d = defects[i, 0]
-        start = tuple(cnts[s][0])
-        end = tuple(cnts[e][0])
-        far = tuple(cnts[f][0])
-        FarDefect.append(far)
-        cv2.line(frame, start, end, [0, 255, 0], 1)
-        cv2.circle(frame, far, 10, [100, 255, 255], 3)
-
-    # Find moments of the largest contour
-    moments = cv2.moments(cnts)
-
-    # Central mass of first order moments
-    if moments['m00'] != 0:
-        cx = int(moments['m10'] / moments['m00'])  # cx = M10/M00
-        cy = int(moments['m01'] / moments['m00'])  # cy = M01/M00
-    centerMass = (cx, cy)
-
-    # Draw center mass
-    cv2.circle(frame, centerMass, 7, [100, 0, 255], 2)
-    font = cv2.FONT_HERSHEY_SIMPLEX
-    cv2.putText(frame, 'Center', tuple(centerMass), font, 1, (0, 0, 255), 1)
-
-    # Distance from each finger defect(finger webbing) to the center mass
-    distanceBetweenDefectsToCenter = []
-    for i in range(0, len(FarDefect)):
-        x = np.array(FarDefect[i])
-        centerMass = np.array(centerMass)
-        distance = np.sqrt(np.power(x[0] - centerMass[0], 2) + np.power(x[1] - centerMass[1], 2))
-        distanceBetweenDefectsToCenter.append(distance)
-
-    # Get an average of three shortest distances from finger webbing to center mass
-    sortedDefectsDistances = sorted(distanceBetweenDefectsToCenter)
-    AverageDefectDistance = np.mean(sortedDefectsDistances[0:2])
-
-    # Get fingertip points from contour hull
-    # If points are in proximity of 80 pixels, consider as a single point in the group
-    finger = []
-    for i in range(0, len(hull) - 1):
-        if (np.absolute(hull[i][0][0] - hull[i + 1][0][0]) > 80) or (
-                np.absolute(hull[i][0][1] - hull[i + 1][0][1]) > 80):
-            if hull[i][0][1] < 500:
-                finger.append(hull[i][0])
-
-    # The fingertip points are 5 hull points with largest y coordinates
-    finger = sorted(finger, key=lambda x: x[1])
-    fingers = finger[0:5]
-
-    # Calculate distance of each finger tip to the center mass
-    fingerDistance = []
-    for i in range(0, len(fingers)):
-        distance = np.sqrt(np.power(fingers[i][0] - centerMass[0], 2) + np.power(fingers[i][1] - centerMass[0], 2))
-        fingerDistance.append(distance)
-
-    # Finger is pointed/raised if the distance of between fingertip to the center mass is larger
-    # than the distance of average finger webbing to center mass by 130 pixels
-    result = 0
-    for i in range(0, len(fingers)):
-        if fingerDistance[i] > AverageDefectDistance + 130:
-            result = result + 1
-
-    # Print number of pointed fingers
-    cv2.putText(frame, str(result), (100, 100), font, 1, (0, 255, 0), 2)
-
-    # show height raised fingers
-    for i, f in enumerate(finger):
         try:
-            cv2.putText(frame,'finger{}'.format(i),tuple(f),font,1,(255,0,0),1)
-        except:
-            pass
+            cnts = contours[ci]
+        except IndexError:
+            cv2.imshow('Dilation', blankImage)
+            cv2.imshow('HSV_TrackBar', blankImage)
+            k = cv2.waitKey(5) & 0xFF
+            if k == 27:
+                break
+            continue
 
-    # Print bounding rectangle
-    x, y, w, h = cv2.boundingRect(cnts)
-    img = cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+        # Find convex hull
+        hull = cv2.convexHull(cnts)
 
-    cv2.drawContours(frame, [hull], -1, (0, 0, 255), 2)
+        # Find convex defects
+        hull2 = cv2.convexHull(cnts, returnPoints=False)
+        defects = cv2.convexityDefects(cnts, hull2)
 
-    # Calculate Frames per second (FPS)
-    num_frames += 1
-    elapsed_time = time.time()-fps_start
-    fps = num_frames / elapsed_time
+        # Get defect points and draw them in the original image
+        FarDefect = []
+        for i in range(defects.shape[0]):
+            s, e, f, d = defects[i, 0]
+            start = tuple(cnts[s][0])
+            end = tuple(cnts[e][0])
+            far = tuple(cnts[f][0])
+            FarDefect.append(far)
+            # cv2.line(frame, start, end, [0, 255, 0], 1)
+            # cv2.circle(frame, far, 10, [100, 255, 255], 3)
 
-    cv2.putText(frame, 'fps: {:.2f}'.format(fps), (20, 20), font, 1, (0, 255, 0), 2)
+        # Find moments of the largest contour
+        moments = cv2.moments(cnts)
 
-    ##### Show final image ########
-    cv2.imshow('Dilation', frame)
-    ###############################
+        # Central mass of first order moments
+        if moments['m00'] != 0:
+            cx = int(moments['m10'] / moments['m00'])  # cx = M10/M00
+            cy = int(moments['m01'] / moments['m00'])  # cy = M01/M00
+        centerMass = (cx, cy)
+
+        # Draw center mass
+        cv2.circle(frame, centerMass, 7, [100, 0, 255], 2)
+        font = cv2.FONT_HERSHEY_SIMPLEX
+        cv2.putText(frame, 'Center', tuple(centerMass), font, 1, (0, 0, 255), 1)
+
+        # Distance from each finger defect(finger webbing) to the center mass
+        distanceBetweenDefectsToCenter = []
+        for i in range(0, len(FarDefect)):
+            x = np.array(FarDefect[i])
+            centerMass = np.array(centerMass)
+            distance = np.sqrt(np.power(x[0] - centerMass[0], 2) + np.power(x[1] - centerMass[1], 2))
+            distanceBetweenDefectsToCenter.append(distance)
+
+        # Get an average of three shortest distances from finger webbing to center mass
+        sortedDefectsDistances = sorted(distanceBetweenDefectsToCenter)
+        AverageDefectDistance = np.mean(sortedDefectsDistances[0:2])
+
+        # Get fingertip points from contour hull
+        # If points are in proximity of 80 pixels, consider as a single point in the group
+        finger = []
+        for i in range(0, len(hull) - 1):
+            if (np.absolute(hull[i][0][0] - hull[i + 1][0][0]) > 80) or (
+                    np.absolute(hull[i][0][1] - hull[i + 1][0][1]) > 80):
+                if hull[i][0][1] < 500:
+                    finger.append(hull[i][0])
+
+        # The fingertip points are 5 hull points with largest y coordinates
+        finger = sorted(finger, key=lambda x: x[1])
+        fingers = finger[0:5]
+
+        # Calculate distance of each finger tip to the center mass
+        fingerDistance = []
+        for i in range(0, len(fingers)):
+            distance = np.sqrt(np.power(fingers[i][0] - centerMass[0], 2) + np.power(fingers[i][1] - centerMass[0], 2))
+            fingerDistance.append(distance)
+
+        # Finger is pointed/raised if the distance of between fingertip to the center mass is larger
+        # than the distance of average finger webbing to center mass by 130 pixels
+        result = 0
+        for i in range(0, len(fingers)):
+            if fingerDistance[i] > AverageDefectDistance + 130:
+                result = result + 1
+
+        # Print number of pointed fingers
+        cv2.putText(frame, str(result), (100, 100), font, 1, (0, 255, 0), 2)
+
+        # show height raised fingers
+        # for i, f in enumerate(finger):
+        #     try:
+        #         cv2.putText(frame,'finger{}'.format(i),tuple(f),font,1,(255,0,0),1)
+        #     except:
+        #         pass
+
+        # Print bounding rectangle
+        x, y, w, h = cv2.boundingRect(cnts)
+        img = cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+
+        cv2.drawContours(frame, [hull], -1, (0, 0, 255), 2)
+
+        # Calculate Frames per second (FPS)
+        num_frames += 1
+        elapsed_time = time.time()-fps_start
+        fps = num_frames / elapsed_time
+
+        cv2.putText(frame, 'fps: {:.2f}'.format(fps), (20, 20), font, 1, (0, 255, 0), 2)
+
+        ##### Show final image ########
+        cv2.imshow('Dilation', frame)
+        ###############################
 
 
-    # Print execution time
-    # print time.time()-start_time
+        # Print execution time
+        # print time.time()-start_time
 
-    # close the output video by pressing 'ESC'
-    k = cv2.waitKey(5) & 0xFF
-    if k == 27:
-        break
+        # close the output video by pressing 'ESC'
+        k = cv2.waitKey(5) & 0xFF
+        if k == 27:
+            break
 
-cap.release()
-cv2.destroyAllWindows()
+    cap.release()
+    cv2.destroyAllWindows()
