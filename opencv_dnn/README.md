@@ -21,3 +21,6 @@ OpenCV Error: Assertion failed (!_aspectRatios.empty()) in PriorBoxLayerImpl, fi
 
 - see https://github.com/opencv/opencv/issues/10917
 - update or re-compile OpenCV
+
+
+### More info: https://github.com/opencv/opencv/wiki/TensorFlow-Object-Detection-API
