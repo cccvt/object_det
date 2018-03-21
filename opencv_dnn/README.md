@@ -1,11 +1,11 @@
 # Quick OpenCV DNN guide to using tensorflow frozen models
 
-The OpenCV `cv2.readNetFromTensorflow` command takes two arguments:
+### The OpenCV `cv2.readNetFromTensorflow` command takes two arguments:
 1. the frozen inference graph (\*.pb), which is a binary tensorflow model
 2. the textual representation of this model, which can be generated using [tf_text_graph_ssd.py](https://github.com/opencv/opencv/blob/master/samples/dnn/tf_text_graph_ssd.py),
 as described here: https://github.com/opencv/opencv/wiki/TensorFlow-Object-Detection-API#generate-a-config-file
 
-Issues:
+### Issues:
 1. If OpenCV raises an error like:
 
 ```
