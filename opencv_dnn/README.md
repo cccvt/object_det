@@ -1,9 +1,10 @@
 # Quick OpenCV DNN guide to using tensorflow frozen models
 
-### More info: https://github.com/opencv/opencv/wiki/TensorFlow-Object-Detection-API
+More info: https://github.com/opencv/opencv/wiki/TensorFlow-Object-Detection-API
 
+### Run network in OpenCV
 The OpenCV `cv2.readNetFromTensorflow` command takes two arguments:
-1. the frozen inference graph (\*.pb), which is a binary tensorflow model
+1. the frozen inference graph `*.pb`, which is a binary tensorflow model
 2. the textual representation of this model, which can be generated using [tf_text_graph_ssd.py](https://github.com/opencv/opencv/blob/master/samples/dnn/tf_text_graph_ssd.py),
 as described here: https://github.com/opencv/opencv/wiki/TensorFlow-Object-Detection-API#generate-a-config-file
 
