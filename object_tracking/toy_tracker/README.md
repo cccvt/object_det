@@ -1,7 +1,7 @@
 # add the object_detection forlder to the pythonpath (needed for utils in object_detect.py)
 modify path to point to the object_detection sample folder from the downloaded tensorflow models
 https://github.com/tensorflow/models.git
-export PYTHONPATH= ~/models/research/object_detection
+`export PYTHONPATH= ~/models/research/object_detection`
 
 # generate csv from all the xmls
 python xml_to_csv.py
