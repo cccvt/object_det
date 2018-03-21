@@ -1,8 +1,7 @@
 # Guide for training and exporting a custom tensorflow network (as a frozen graph) 
 
 * Add the object_detection forlder to the pythonpath (needed for utils in object_detect.py)
-modify path to point to the object_detection sample folder from the downloaded tensorflow models
-https://github.com/tensorflow/models.git
+  - modify path to point to the object_detection sample folder from the downloaded tensorflow models (from https://github.com/tensorflow/models.git)
 ```
 export PYTHONPATH= ~/models/research/object_detection
 ```
