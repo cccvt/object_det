@@ -7,7 +7,9 @@ https://github.com/tensorflow/models.git
 export PYTHONPATH= ~/models/research/object_detection
 ```
 ### generate csv from all the xmls
+```
 python xml_to_csv.py
+```
 
 ### split the csv into train and test sets
 ```
