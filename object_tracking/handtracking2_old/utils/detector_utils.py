@@ -58,6 +58,7 @@ def my_model((path)):
 
 
 # Load a frozen infrerence graph into memory
+
 def load_inference_graph():
     # load frozen tensorflow model into memory
     print("> ====== loading HAND frozen graph into memory")
@@ -73,6 +74,22 @@ def load_inference_graph():
     g = ImportGraph(PATH_TO_CKPT)
     print(">  ====== Hand Inference graph loaded.")
     return g
+
+def load_inference_graph_old():
+    # load frozen tensorflow model into memory
+    print("> ====== loading HAND frozen graph into memory")
+    detection_graph = tf.Graph()
+    with detection_graph.as_default():
+        od_graph_def = tf.GraphDef()
+        with tf.gfile.GFile(PATH_TO_CKPT, 'rb') as fid:
+            serialized_graph = fid.read()
+            od_graph_def.ParseFromString(serialized_graph)
+            tf.import_graph_def(od_graph_def, name='')
+
+        sess = tf.Session(graph=detection_graph)
+    # g = ImportGraph(PATH_TO_CKPT)
+    print(">  ====== Hand Inference graph loaded.")
+    return detection_graph, sess
 
 
 def load_pose_inference_graph():

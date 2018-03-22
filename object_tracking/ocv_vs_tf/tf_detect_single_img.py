@@ -52,7 +52,7 @@ class FrozenModel():
 
 if __name__ == '__main__':
     g = FrozenModel(score_thresh=0.2, num_hands=10)
-    g.load_graph('/home/testuser/obj_det_git/object_tracking/handtracking2_old/hand_inference_graph/frozen_inference_graph.pb')
+    g.load_graph('/home/testuser/object_det/object_tracking/handtracking/hand_inference_graph/frozen_inference_graph.pb')
 
     image_np = cv2.imread('/home/testuser/obj_det_git/object_tracking/ocv_vs_tf/test2.png')
     image_np = cv2.cvtColor(image_np, cv2.COLOR_BGR2RGB)

@@ -9,7 +9,7 @@ import argparse
 # sudo modprobe v4l2loopback
 # ffmpeg -f x11grab -r 15 -s 640x480 -i :0.0+0,0 -vcodec rawvideo -pix_fmt rgb24 -threads 0 -f v4l2 /dev/video0
 
-detection_graph, sess = detector_utils.load_inference_graph()
+detection_graph, sess = detector_utils.load_inference_graph_old()
 
 if __name__ == '__main__':
 

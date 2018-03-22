@@ -15,7 +15,7 @@ COLORS = np.random.uniform(0, 255, size=(len(CLASSES), 3))
 
 # load our serialized model from disk
 print("[INFO] loading model...")
-net = cv2.dnn.readNetFromTensorflow("hat_model/frozen_inference_graph.pb", "hat_model/ssd_mobilenet_v1_coco.pbtxt")
+net = cv2.dnn.readNetFromTensorflow("hat_model/frozen_inference_graph.pb", "ssd_mobilenet_v1_coco_hat.pbtxt")
 # net = cv2.dnn.readNetFromTensorflow("ssd_mobilenet_v1_coco_11_06_2017/frozen_inference_graph.pb", "ssd_mobilenet_v1_coco_11_06_2017/ssd_mobilenet_v1_coco.pbtxt")
 #
 

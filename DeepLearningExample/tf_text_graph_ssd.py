@@ -20,7 +20,7 @@ parser = argparse.ArgumentParser(description='Run this script to get a text grap
                                              'Then pass it with .pb file to cv::dnn::readNetFromTensorflow function.')
 parser.add_argument('--input', required=True, help='Path to frozen TensorFlow graph.')
 parser.add_argument('--output', required=True, help='Path to output text graph.')
-parser.add_argument('--num_classes', default=1, type=int, help='Number of trained classes.')
+parser.add_argument('--num_classes', default=90, type=int, help='Number of trained classes.')
 parser.add_argument('--min_scale', default=0.2, type=float, help='Hyper-parameter of ssd_anchor_generator from config file.')
 parser.add_argument('--max_scale', default=0.95, type=float, help='Hyper-parameter of ssd_anchor_generator from config file.')
 parser.add_argument('--num_layers', default=6, type=int, help='Hyper-parameter of ssd_anchor_generator from config file.')
