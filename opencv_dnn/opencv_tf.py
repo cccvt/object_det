@@ -1,12 +1,12 @@
 import cv2 as cv
 import numpy as np
 
-frame = cv.imread('/home/testuser/obj_det_git/object_tracking/handtracking/test8.jpeg')
+frame = cv.imread('/home/testuser/obj_det_git/image_classifier/t1.jpg')
 rows = frame.shape[0]
 cols = frame.shape[1]
 
-net = cv.dnn.readNetFromTensorflow('/home/testuser/tf_tut/obj_detection/handtracking2_old/hand_inference_graph/frozen_inference_graph.pb',
-                                   '/home/testuser/tf_tut/obj_detection/handtracking2_old/hand_inference_graph/graph.pbtxt')
+net = cv.dnn.readNetFromTensorflow('/home/testuser/obj_det_git/object_tracking/handtracking2_old/hand_inference_graph/frozen_inference_graph.pb',
+                                   '/home/testuser/obj_det_git/object_tracking/handtracking2_old/hand_inference_graph/graph.pbtxt')
 
 classes = None
 
@@ -44,4 +44,4 @@ cv.waitKey()
 # label = '%s: %.4f' % (classes[classId] if classes else 'Class #%d' % classId, confidence)
 # cv.putText(frame, label, (0, 40), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0))
 #
-# cv.imshow(winName, frame)
+# cv.imshow('out', frame)
