@@ -1,70 +1,70 @@
-[1mdiff --git a/ssd_mobilenet_v1_coco.config b/OCV_ssd_mobilenet_v1_coco.config[m
-[1mold mode 100755[m
-[1mnew mode 100644[m
-[1mindex ea4f240..73da986[m
-[1m--- a/ssd_mobilenet_v1_coco.config[m
-[1m+++ b/OCV_ssd_mobilenet_v1_coco.config[m
-[36m@@ -6,7 +6,7 @@[m
+diff --git a/ssd_mobilenet_v1_coco.config b/OCV_ssd_mobilenet_v1_coco.config
+old mode 100755
+new mode 100644
+index ea4f240..73da986
+--- a/ssd_mobilenet_v1_coco.config
++++ b/OCV_ssd_mobilenet_v1_coco.config
+@@ -6,7 +6,7 @@
 
-model {[m
-  ssd {[m
-    num_classes: [31m[-1-][m[32m{+90+}[m
-    box_coder {[m
-      faster_rcnn_box_coder {[m
-        y_scale: 10.0[m
-[36m@@ -108,12 +108,10 @@[m [mmodel {[m
-    loss {[m
-      classification_loss {[m
-        weighted_sigmoid {[m
-[31m[-          anchorwise_output: true-][m
-        }[m
-      }[m
-      localization_loss {[m
-        weighted_smooth_l1 {[m
-[31m[-          anchorwise_output: true-][m
-        }[m
-      }[m
-      hard_example_miner {[m
-[36m@@ -140,7 +138,7 @@[m [mmodel {[m
-}[m
+model {
+  ssd {
+    num_classes: [-1-]{+90+}
+    box_coder {
+      faster_rcnn_box_coder {
+        y_scale: 10.0
+@@ -108,12 +108,10 @@ model {
+    loss {
+      classification_loss {
+        weighted_sigmoid {
+[-          anchorwise_output: true-]
+        }
+      }
+      localization_loss {
+        weighted_smooth_l1 {
+[-          anchorwise_output: true-]
+        }
+      }
+      hard_example_miner {
+@@ -140,7 +138,7 @@ model {
+}
 
-train_config: {[m
-  batch_size: [31m[-6-][m[32m{+24+}[m
-  optimizer {[m
-    rms_prop_optimizer: {[m
-      learning_rate: {[m
-[36m@@ -155,7 +153,7 @@[m [mtrain_config: {[m
-      epsilon: 1.0[m
-    }[m
-  }[m
-  fine_tune_checkpoint: [31m[-"PATH_TO_DATA/model.ckpt"-][m[32m{+"PATH_TO_BE_CONFIGURED/model.ckpt"+}[m
-  from_detection_checkpoint: true[m
-  # Note: The below line limits the training process to 200K steps, which we[m
-  # empirically found to be sufficient enough to train the pets dataset. This[m
-[36m@@ -174,13 +172,13 @@[m [mtrain_config: {[m
+train_config: {
+  batch_size: [-6-]{+24+}
+  optimizer {
+    rms_prop_optimizer: {
+      learning_rate: {
+@@ -155,7 +153,7 @@ train_config: {
+      epsilon: 1.0
+    }
+  }
+  fine_tune_checkpoint: [-"PATH_TO_DATA/model.ckpt"-]{+"PATH_TO_BE_CONFIGURED/model.ckpt"+}
+  from_detection_checkpoint: true
+  # Note: The below line limits the training process to 200K steps, which we
+  # empirically found to be sufficient enough to train the pets dataset. This
+@@ -174,13 +172,13 @@ train_config: {
 
-train_input_reader: {[m
-  tf_record_input_reader {[m
-    input_path: [31m[-"PATH_TO_DATA/train.record"-][m[32m{+"PATH_TO_BE_CONFIGURED/mscoco_train.record"+}[m
-  }[m
-  label_map_path: [31m[-"PATH_TO_DATA/hand_label_map.pbtxt"-][m[32m{+"PATH_TO_BE_CONFIGURED/mscoco_label_map.pbtxt"+}[m
-}[m
+train_input_reader: {
+  tf_record_input_reader {
+    input_path: [-"PATH_TO_DATA/train.record"-]{+"PATH_TO_BE_CONFIGURED/mscoco_train.record"+}
+  }
+  label_map_path: [-"PATH_TO_DATA/hand_label_map.pbtxt"-]{+"PATH_TO_BE_CONFIGURED/mscoco_label_map.pbtxt"+}
+}
 
-eval_config: {[m
-  num_examples: [31m[-960-][m[32m{+8000+}[m
-  # Note: The below line limits the evaluation process to 10 evaluations.[m
-  # Remove the below line to evaluate indefinitely.[m
-  max_evals: 10[m
-[36m@@ -188,12 +186,9 @@[m [meval_config: {[m
+eval_config: {
+  num_examples: [-960-]{+8000+}
+  # Note: The below line limits the evaluation process to 10 evaluations.
+  # Remove the below line to evaluate indefinitely.
+  max_evals: 10
+@@ -188,12 +186,9 @@ eval_config: {
 
-eval_input_reader: {[m
-  tf_record_input_reader {[m
-    input_path: [31m[-"PATH_TO_DATA/test.record"-][m[32m{+"PATH_TO_BE_CONFIGURED/mscoco_val.record"+}[m
-  }[m
-  label_map_path: [31m[-"hand_inference_graph/hand_label_map.pbtxt"-][m[32m{+"PATH_TO_BE_CONFIGURED/mscoco_label_map.pbtxt"+}[m
-  shuffle: false[m
-  num_readers: 1[m
-[31m[-  num_epochs: 1-][m
-}[m
+eval_input_reader: {
+  tf_record_input_reader {
+    input_path: [-"PATH_TO_DATA/test.record"-]{+"PATH_TO_BE_CONFIGURED/mscoco_val.record"+}
+  }
+  label_map_path: [-"hand_inference_graph/hand_label_map.pbtxt"-]{+"PATH_TO_BE_CONFIGURED/mscoco_label_map.pbtxt"+}
+  shuffle: false
+  num_readers: 1
+[-  num_epochs: 1-]
+}
 
 
