@@ -1,6 +1,8 @@
 # Overview
 
 This repo contains code for the "TensorFlow for poets 2" series of codelabs.
+[Tutorial Part 1](https://codelabs.developers.google.com/codelabs/tensorflow-for-poets)
+[Tutorial Part 2](https://codelabs.developers.google.com/codelabs/tensorflow-for-poets-2-tflite)
 
 There are multiple versions of this codelab depending on which version 
 of the tensorflow libraries you plan on using:
