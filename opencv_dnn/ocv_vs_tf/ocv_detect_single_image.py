@@ -2,8 +2,8 @@ import cv2
 
 
 if __name__ == '__main__':
-#    image_np = cv2.imread('/home/testuser/obj_det_git/opencv_dnn/ocv_vs_tf/test2.png')
-    image_np = cv2.imread('/home/testuser/obj_det_git/image_classifier/t1.jpg')
+    #image_np = cv2.imread('/home/testuser/obj_det_git/opencv_dnn/ocv_vs_tf/test2.jpg')
+    image_np = cv2.imread('t1.png')
 
     mean = 127.5
     blob = cv2.dnn.blobFromImage(image_np, 1/mean, (300, 300), (mean, mean, mean), swapRB=True, crop=False)
@@ -16,7 +16,7 @@ if __name__ == '__main__':
     cols = image_np.shape[1]
     for detection in out[0,0,:,:]:
         score = float(detection[2])
-        if score > 0.2:
+        if score > 0.6:
             
             left = detection[3] * cols
             top = detection[4] * rows
@@ -32,6 +32,6 @@ if __name__ == '__main__':
                     font, font_scale, (0, 0, 255), font_thickness)
 
     cv2.imshow('Detection_OCV', image_np)
-    image_np = cv2.resize(image_np, (0, 0), fx=0.3, fy=0.3)
-    cv2.imwrite('opencv_result2.png', image_np)
+    #image_np = cv2.resize(image_np, (0, 0), fx=0.3, fy=0.3)
+    cv2.imwrite('opencv_result_conv2.jpg', image_np)
     cv2.waitKey()
