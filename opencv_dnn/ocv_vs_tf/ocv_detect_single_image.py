@@ -16,7 +16,7 @@ if __name__ == '__main__':
     cols = image_np.shape[1]
     for detection in out[0,0,:,:]:
         score = float(detection[2])
-        if score > 0.2:
+        if score > 0.8:
             
             left = detection[3] * cols
             top = detection[4] * rows
