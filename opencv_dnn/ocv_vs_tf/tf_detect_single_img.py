@@ -48,13 +48,21 @@ class FrozenModel():
                 p1 = (int(left), int(top))
                 p2 = (int(right), int(bottom))
                 cv2.rectangle(self.image_np, p1, p2, (77, 255, 9), 3, 1)
+                font = cv2.FONT_HERSHEY_SIMPLEX
+                font_scale = 0.4
+                font_thickness = 1
+                cv2.putText(image_np,
+                    '{:.2f}'.format(self.scores[i] ),
+                    (int(left), int(top+5)),
+                    font, font_scale, (0, 0, 255), font_thickness)
 
 
 if __name__ == '__main__':
     g = FrozenModel(score_thresh=0.2, num_hands=10)
     g.load_graph('frozen_inference_graph.pb')
 
-    image_np = cv2.imread('test2.png')
+#    image_np = cv2.imread('test2.png')
+    image_np = cv2.imread('/home/testuser/obj_det_git/image_classifier/t1.jpg')
     image_np = cv2.cvtColor(image_np, cv2.COLOR_BGR2RGB)
     g.set_input(image_np)
 
@@ -65,5 +73,5 @@ if __name__ == '__main__':
     g.draw_box_on_image()
     image_np = cv2.cvtColor(image_np, cv2.COLOR_RGB2BGR)
     cv2.imshow('Detection_TF', image_np)
-    cv2.imwrite('tf_result.png', image_np)
+    cv2.imwrite('tf_result2.png', image_np)
     cv2.waitKey()
