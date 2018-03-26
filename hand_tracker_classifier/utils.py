@@ -1,22 +1,59 @@
-import os
 import cv2
 import datetime
 import numpy as np
 import tensorflow as tf
 from threading import Thread
-from multiprocessing import Queue, Pool
 
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # suppress tensorflow warnings
+
+class WebcamVideoStream:
+    def __init__(self, src, width, height):
+        # initialize the video camera stream and read the first frame
+        # from the stream
+        self.stream = cv2.VideoCapture(src)
+        self.stream.set(cv2.CAP_PROP_FRAME_WIDTH, width)
+        self.stream.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
+        (self.grabbed, self.frame) = self.stream.read()
+
+        # initialize the variable used to indicate if the thread should
+        # be stopped
+        self.stopped = False
+
+    def start(self):
+        # start the thread to read frames from the video stream
+        Thread(target=self.update, args=()).start()
+        return self
+
+    def update(self):
+        # keep looping infinitely until the thread is stopped
+        while True:
+            # if the thread indicator variable is set, stop the thread
+            if self.stopped:
+                return
+
+            # otherwise, read the next frame from the stream
+            (self.grabbed, self.frame) = self.stream.read()
+
+    def read(self):
+        # return the frame most recently read
+        return self.frame
+
+    def size(self):
+        # return size of the capture device
+        return self.stream.get(3), self.stream.get(4)
+
+    def stop(self):
+        # indicate that the thread should be stopped
+        self.stopped = True
 
 
 class FrozenGraph(object):
     def __init__(self, score_thresh=0.2, num_hands_detect=2):
         self.score_thresh = score_thresh
         self.num_hands_detect = num_hands_detect
-        self.label_lines = []
-        with open('frozen_models/pose_graph_labels.txt', 'r') as f:
-            for line in f:
-                self.label_lines.append(line.strip())
+        # self.label_lines = []
+        # with open('/home/testuser/obj_det_git/tensorflow-for-poets-2/tf_files/retrained_labels.txt', 'r') as f:
+        #     for line in f:
+        #         self.label_lines.append(line.strip())
 
     def load_graph(self, pbpath):
         self.graph = tf.Graph()
@@ -139,48 +176,14 @@ class PoseModel(FrozenGraph):
         return name, best_score
 
 
-class WebcamVideoStream:
-    def __init__(self, src, width, height):
-        # initialize the video camera stream and read the first frame
-        # from the stream
-        self.stream = cv2.VideoCapture(src)
-        self.stream.set(cv2.CAP_PROP_FRAME_WIDTH, width)
-        self.stream.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
-        (self.grabbed, self.frame) = self.stream.read()
-
-        # initialize the variable used to indicate if the thread should
-        # be stopped
-        self.stopped = False
-
-    def start(self):
-        # start the thread to read frames from the video stream
-        Thread(target=self.update, args=()).start()
-        return self
-
-    def update(self):
-        # keep looping infinitely until the thread is stopped
-        while True:
-            # if the thread indicator variable is set, stop the thread
-            if self.stopped:
-                return
-
-            # otherwise, read the next frame from the stream
-            (self.grabbed, self.frame) = self.stream.read()
-
-    def read(self):
-        # return the frame most recently read
-        return self.frame
-
-    def size(self):
-        # return size of the capture device
-        return self.stream.get(3), self.stream.get(4)
-
-    def stop(self):
-        # indicate that the thread should be stopped
-        self.stopped = True
+def draw_fps(start_time, num_frames, frame):
+    elapsed_time = (datetime.datetime.now() -
+                    start_time).total_seconds()
+    fps = num_frames / elapsed_time
+    cv2.putText(frame, '{:.2f}'.format(fps), (20, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 255, 77), 2)
 
 
-def draw_box_on_image(box, guess, guess_score, track_score, image_data):
+def draw_box_on_image(box, guess, guess_score, track_score, score_thresh, image_data):
     if track_score > score_thresh:
         (left, right, top, bottom) = (box[0], box[1], box[2], box[3])
         p1 = (int(left), int(top))
@@ -207,17 +210,8 @@ def draw_box_on_image(box, guess, guess_score, track_score, image_data):
                     font, font_scale, (0, 0, 0), font_thickness)
 
 
-def draw_fps(image_data):
-
-    elapsed_time = (datetime.datetime.now() -
-                    start_time).total_seconds()
-    fps = num_frames / elapsed_time
-    cv2.putText(image_data, '{:.2f}'.format(fps), (20, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (77, 77, 255), 2)
-
-
-def worker_hand(input_q, output_q, frame_processed):
+def worker_hand_pose(input_q, output_q, frame_processed):
     # print(">> loading frozen model for worker")
-    # label_lines = ['palm', 'fist', 'point']
     detection_graph = tf.Graph()
     with detection_graph.as_default():
         od_graph_def = tf.GraphDef()
@@ -232,18 +226,15 @@ def worker_hand(input_q, output_q, frame_processed):
     with open('frozen_models/pose_graph_labels.txt', 'r') as f:
         for line in f:
             label_lines.append(line.strip())
-    # detection_graph, sess = detector_utils.load_inference_graph(r'/home/testuser/tf_tut/obj_detection/handtracking/hand_inference_graph/frozen_inference_graph.pb')
     while True:
-        # print("> ===== in worker loop, frame ", frame_processed)
         frame = input_q.get()
         if (frame is not None):
             softmax_tensor = sess.graph.get_tensor_by_name('final_result:0')
-            # predictions = sess.run(softmax_tensor, {'DecodeJpeg:0': frame})
+            # prepare frame for inference: resize, normalize and convert size
             frame = cv2.resize(frame, (224, 224), interpolation=cv2.INTER_LINEAR)
             frame = cv2.normalize(frame.astype('float32'), None, -0.5, .5, cv2.NORM_MINMAX)
-            # normalized = frame - 128
-            # normalized /= 128
             frame = np.expand_dims(frame, axis=0)
+
             predictions = sess.run(softmax_tensor, {'input:0': frame})
             top_k = predictions[0].argsort()[-len(predictions[0]):][::-1]
 
@@ -266,10 +257,11 @@ def worker_hand(input_q, output_q, frame_processed):
             break
     sess.close()
 
+
 def worker_hand_wclass(input_q, output_q, frame_processed):
     # this is slower...
     # handPose.load_graph('/home/testuser/obj_det_git/tf_image_classifier/tf_files/retrained_graph.pb')
-    handPose.load_graph('frozen_models/pose_graph.pb')
+    handPose.load_graph('/home/testuser/obj_det_git/tensorflow-for-poets-2/tf_files/retrained_graph.pb')
     
     while True:
         # print("> ===== in worker loop, frame ", frame_processed)
@@ -282,57 +274,4 @@ def worker_hand_wclass(input_q, output_q, frame_processed):
             frame_processed += 1
         else:
             output_q.put((frame, None, None))
-            break
-
-
-if __name__ == '__main__':
-    # max number of hands we want to detect/track
-    score_thresh = 0.2
-    num_hands = 2
-
-    handTrak = HandModelCV(score_thresh=0.6, num_hands_detect=num_hands)
-    handPose = PoseModel(score_thresh=score_thresh, num_hands_detect=num_hands)
-
-    handTrak.load_graph('frozen_models/hand_detect_graph.pb',
-                        'frozen_models/hand_detect_graph.pbtxt')
-    # handPose.load_graph('/home/testuser/obj_det_git/tf_image_classifier/tf_files/retrained_graph.pb')
-
-    video_capture = WebcamVideoStream(src=0,
-                                    width=800,
-                                    height=600).start()
-
-    start_time = datetime.datetime.now()
-    num_frames = 0
-
-    input_q = Queue(maxsize=5)
-    output_q = Queue(maxsize=5)
-    # spin up workers to paralleize detection.
-    frame_processed = 0
-    num_workers = 3
-    pool_hand = Pool(num_workers, worker_hand, (input_q, output_q, frame_processed))
-
-    while True:
-        image_np = video_capture.read()
-        image_np = cv2.cvtColor(image_np, cv2.COLOR_BGR2RGB)  # opencv reads images by default in BGR format
-        handTrak.set_input(image_np)
-        handTrak.detect_objects()
-
-        for hand_data in handTrak.cropped_hands:
-            hand_image, box, track_score = hand_data
-            if hand_image.shape[0] > 0 and hand_image.shape[1] > 0:
-                input_q.put(cv2.cvtColor(hand_image, cv2.COLOR_BGR2RGB))
-                _, guess, guess_score = output_q.get()
-                print guess, guess_score
-                # handPose.set_input(hand_image)
-                # guess, guess_score = handPose.get_pred()
-                draw_box_on_image(box, guess, guess_score, track_score, image_np)
-
-        # Calculate Frames per second (FPS)
-        num_frames += 1
-        draw_fps(image_np)
-        image_np = cv2.resize(image_np, (0, 0), fx=1, fy=1)
-        cv2.imshow('Detection_TF', cv2.cvtColor(image_np, cv2.COLOR_RGB2BGR))
-        if cv2.waitKey(25) & 0xFF == ord('q'):
-            video_capture.stop()
-            cv2.destroyAllWindows()
             break
