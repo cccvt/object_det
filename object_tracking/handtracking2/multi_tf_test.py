@@ -156,7 +156,7 @@ def draw_fps(image_data):
 if __name__ == '__main__':
     # max number of hands we want to detect/track
     score_thresh = 0.2
-    num_hands = 1
+    num_hands = 2
     hand_pose_label_lines = ['palm', 'fist', 'point']
 
     # image_np = cv2.imread('/home/testuser/obj_det_git/tf_image_classifier/multi_test.jpg')
@@ -167,33 +167,36 @@ if __name__ == '__main__':
     handTrak.load_graph('/home/testuser/obj_det_git/object_tracking/handtracking/hand_inference_graph/frozen_inference_graph.pb')
     handPose.load_graph('/home/testuser/obj_det_git/tf_image_classifier/tf_files/retrained_graph.pb')
 
-    video_capture = WebcamVideoStream(src=0,
-                                      width=320,
-                                      height=240).start()
+    # video_capture = WebcamVideoStream(src=0,
+    #                                 width=240,
+    #                                 height=240).start()
+    cap = cv2.VideoCapture('/home/testuser/obj_det_git/myvid.mp4')
 
     start_time = datetime.datetime.now()
     num_frames = 0
 
     while True:
-        image_np = video_capture.read()
+        # image_np = video_capture.read()
+        ret, image_np = cap.read()
         image_np = cv2.cvtColor(image_np, cv2.COLOR_BGR2RGB)  # opencv reads images by default in BGR format
-
-        handTrak.set_input(image_np)
-        handTrak.detect_objects()
+    	if (num_frames % 3) == 0:
+	        handTrak.set_input(image_np)
+	        handTrak.detect_objects()
 
         for hand_data in handTrak.cropped_hands:
             hand_image, box, track_score = hand_data
-            handPose.set_input(hand_image)
-            guess, guess_score = handPose.get_pred()
+            if (num_frames % 3) == 0:
+	            handPose.set_input(hand_image)
+	            guess, guess_score = handPose.get_pred()
             # guess, guess_score = None, None
             draw_box_on_image(box, guess, guess_score, track_score, image_np)
 
         # Calculate Frames per second (FPS)
         num_frames += 1
         draw_fps(image_np)
-
+        image_np = cv2.resize(image_np, (0, 0), fx=1, fy=1)
         cv2.imshow('Detection_TF', cv2.cvtColor(image_np, cv2.COLOR_RGB2BGR))
         if cv2.waitKey(25) & 0xFF == ord('q'):
-            video_capture.stop()
+            # video_capture.stop()
             cv2.destroyAllWindows()
             break
