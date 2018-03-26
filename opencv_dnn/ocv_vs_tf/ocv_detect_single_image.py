@@ -32,5 +32,6 @@ if __name__ == '__main__':
                     font, font_scale, (0, 0, 255), font_thickness)
 
     cv2.imshow('Detection_OCV', image_np)
+    image_np = cv2.resize(image_np, (0, 0), fx=0.3, fy=0.3)
     cv2.imwrite('opencv_result2.png', image_np)
     cv2.waitKey()
