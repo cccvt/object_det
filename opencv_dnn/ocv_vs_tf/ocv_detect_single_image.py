@@ -7,7 +7,7 @@ if __name__ == '__main__':
 
     mean = 127.5
     blob = cv2.dnn.blobFromImage(image_np, 1/mean, (300, 300), (mean, mean, mean), swapRB=True, crop=False)
-    net = cv2.dnn.readNetFromTensorflow('frozen_inference_graph.pb', 'graph.pbtxt')
+    net = cv2.dnn.readNetFromTensorflow('frozen_inference_graph.pb', 'fixed_graph.pbtxt')
 
     net.setInput(blob)
     out = net.forward()
@@ -33,5 +33,5 @@ if __name__ == '__main__':
 
     cv2.imshow('Detection_OCV', image_np)
     #image_np = cv2.resize(image_np, (0, 0), fx=0.3, fy=0.3)
-    cv2.imwrite('opencv_result_conv2.jpg', image_np)
+    cv2.imwrite('opencv_sol1.jpg', image_np)
     cv2.waitKey()

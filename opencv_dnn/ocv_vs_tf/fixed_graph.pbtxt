@@ -2120,11 +2120,11 @@ node {
           }
         }
         float_val: 105.0
+        float_val: 125.499000549
         float_val: 74.2462081909
         float_val: 148.492416382
         float_val: 60.6217765808
         float_val: 181.956329346
-        float_val: 125.499000549
       }
     }
   }
@@ -2156,11 +2156,11 @@ node {
           }
         }
         float_val: 105.0
+        float_val: 125.499000549
         float_val: 148.492416382
         float_val: 74.2462081909
         float_val: 181.865341187
         float_val: 60.5914611816
-        float_val: 125.499000549
       }
     }
   }
@@ -2193,11 +2193,11 @@ node {
           }
         }
         float_val: 150.0
+        float_val: 171.026321411
         float_val: 106.066017151
         float_val: 212.132034302
         float_val: 86.6025390625
         float_val: 259.93762207
-        float_val: 171.026321411
       }
     }
   }
@@ -2229,11 +2229,11 @@ node {
           }
         }
         float_val: 150.0
+        float_val: 171.026321411
         float_val: 212.132034302
         float_val: 106.066017151
         float_val: 259.807617188
         float_val: 86.5592269897
-        float_val: 171.026321411
       }
     }
   }
@@ -2266,11 +2266,11 @@ node {
           }
         }
         float_val: 195.0
+        float_val: 216.333084106
         float_val: 137.885818481
         float_val: 275.771636963
         float_val: 112.583305359
         float_val: 337.918914795
-        float_val: 216.333084106
       }
     }
   }
@@ -2302,11 +2302,11 @@ node {
           }
         }
         float_val: 195.0
+        float_val: 216.333084106
         float_val: 275.771636963
         float_val: 137.885818481
         float_val: 337.749908447
         float_val: 112.527000427
-        float_val: 216.333084106
       }
     }
   }
@@ -2339,11 +2339,11 @@ node {
           }
         }
         float_val: 240.0
+        float_val: 261.533935547
         float_val: 169.705627441
         float_val: 339.411254883
         float_val: 138.564071655
         float_val: 415.90020752
-        float_val: 261.533935547
       }
     }
   }
@@ -2375,11 +2375,11 @@ node {
           }
         }
         float_val: 240.0
+        float_val: 261.533935547
         float_val: 339.411254883
         float_val: 169.705627441
         float_val: 415.692199707
         float_val: 138.494766235
-        float_val: 261.533935547
       }
     }
   }
@@ -2412,11 +2412,11 @@ node {
           }
         }
         float_val: 285.0
+        float_val: 292.403839111
         float_val: 201.525436401
         float_val: 403.050872803
         float_val: 164.544830322
         float_val: 493.881469727
-        float_val: 292.403839111
       }
     }
   }
@@ -2448,11 +2448,11 @@ node {
           }
         }
         float_val: 285.0
+        float_val: 292.403839111
         float_val: 403.050872803
         float_val: 201.525436401
         float_val: 493.634490967
         float_val: 164.462539673
-        float_val: 292.403839111
       }
     }
   }
