@@ -52,9 +52,9 @@ class FrozenModel():
 
 if __name__ == '__main__':
     g = FrozenModel(score_thresh=0.2, num_hands=10)
-    g.load_graph('/home/testuser/object_det/object_tracking/handtracking/hand_inference_graph/frozen_inference_graph.pb')
+    g.load_graph('frozen_inference_graph.pb')
 
-    image_np = cv2.imread('/home/testuser/obj_det_git/object_tracking/ocv_vs_tf/test2.png')
+    image_np = cv2.imread('test2.png')
     image_np = cv2.cvtColor(image_np, cv2.COLOR_BGR2RGB)
     g.set_input(image_np)
 
@@ -63,6 +63,7 @@ if __name__ == '__main__':
 
     # draw bounding boxes
     g.draw_box_on_image()
-
-    cv2.imshow('Detection_TF', cv2.cvtColor(image_np, cv2.COLOR_RGB2BGR))
+    image_np = cv2.cvtColor(image_np, cv2.COLOR_RGB2BGR)
+    cv2.imshow('Detection_TF', image_np)
+    cv2.imwrite('tf_result.png', image_np)
     cv2.waitKey()
