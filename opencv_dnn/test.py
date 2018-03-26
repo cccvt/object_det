@@ -3,8 +3,8 @@ import datetime
 
 # cvNet = cv.dnn.readNetFromTensorflow('/home/testuser/PycharmProjects/obj_detector/handtracking/hand_inference_graph/frozen_inference_graph.pb',
 #                                      '/home/testuser/PycharmProjects/obj_detector/handtracking/hand_inference_graph/graph.pbtxt')
-cvNet = cv.dnn.readNetFromTensorflow('/home/testuser/PycharmProjects/obj_detector/handtracking/hand_inference_graph/frozen_inference_graph.pb',
-                                     '/home/testuser/PycharmProjects/obj_detector/handtracking/hand_inference_graph/graph.pbtxt')
+cvNet = cv.dnn.readNetFromTensorflow('/home/testuser/obj_det_git/object_tracking/handtracking2/hand_inference_graph/frozen_inference_graph.pb',
+                                     '/home/testuser/obj_det_git/object_tracking/handtracking2/hand_inference_graph/fixed_graph.pbtxt')
 
 # img = cv.imread('/home/testuser/PycharmProjects/obj_detector/images/toy14.jpg')
 cap = cv.VideoCapture(0)
@@ -21,11 +21,14 @@ while True:
 
     for detection in cvOut[0,0,:,:]:
         score = float(detection[2])
-        if score > 0.3:
+        if score > 0.6:
+            print (detection[3], detection[5], detection[4], detection[6])
             left = detection[3] * cols
             top = detection[4] * rows
             right = detection[5] * cols
             bottom = detection[6] * rows
+            # box = (left, top, right, bottom)
+            # print box
             cv.rectangle(img, (int(left), int(top)), (int(right), int(bottom)), (23, 230, 210), thickness=2)
 
     num_frames += 1
