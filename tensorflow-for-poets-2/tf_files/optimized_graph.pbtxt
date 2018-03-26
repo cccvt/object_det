@@ -7,25 +7,6 @@ node {
       type: DT_FLOAT
     }
   }
-  attr {
-    key: "shape"
-    value {
-      shape {
-        dim {
-          size: 1
-        }
-        dim {
-          size: 224
-        }
-        dim {
-          size: 224
-        }
-        dim {
-          size: 3
-        }
-      }
-    }
-  }
 }
 node {
   name: "concat/axis_flatten"
@@ -617,7 +598,7 @@ node {
   attr {
     key: "num_classes"
     value {
-      i: 5
+      i: 4
     }
   }
   attr {
@@ -632,6 +613,4 @@ node {
       i: 100
     }
   }
-}
-library {
 }

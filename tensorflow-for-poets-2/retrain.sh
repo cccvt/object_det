@@ -3,6 +3,10 @@ ARCHITECTURE="mobilenet_0.50_${IMAGE_SIZE}"
 
 python -m scripts.retrain \
   --bottleneck_dir=tf_files/bottlenecks \
+  --flip_left_right \
+  --random_crop=25 \
+  --random_scale=25 \
+  --random_brightness=50 \
   --how_many_training_steps=500 \
   --model_dir=tf_files/models/ \
   --summaries_dir=tf_files/training_summaries/"${ARCHITECTURE}" \
