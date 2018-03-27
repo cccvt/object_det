@@ -9,6 +9,7 @@
 * [opencv_dnn](https://github.com/parvudan/object_det/tree/master/opencv_dnn)
   - quick attempt at loading a tensorflow net in opencv using `cv2.readNetFromTensorflow` (not working/ wrong predictions)
 * [tensorflow-for-poets-2](https://github.com/parvudan/object_det/tree/master/tensorflow-for-poets-2) 
+  - retrained model with own image dataset to detect palm, fist or point
   - repo contains code for the "TensorFlow for poets 2" series of codelabs
   - [Tutorial Part 1](https://codelabs.developers.google.com/codelabs/tensorflow-for-poets)
   - [Tutorial Part 2](https://codelabs.developers.google.com/codelabs/tensorflow-for-poets-2-tflite)
