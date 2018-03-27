@@ -261,7 +261,7 @@ def worker_hand_pose(input_q, output_q, frame_processed):
 def worker_hand_wclass(input_q, output_q, frame_processed):
     # this is slower...
     # handPose.load_graph('/home/testuser/obj_det_git/tf_image_classifier/tf_files/retrained_graph.pb')
-    handPose.load_graph('/home/testuser/obj_det_git/tensorflow-for-poets-2/tf_files/retrained_graph.pb')
+    handPose.load_graph('frozen_models/pose_graph.pb')
     
     while True:
         # print("> ===== in worker loop, frame ", frame_processed)
