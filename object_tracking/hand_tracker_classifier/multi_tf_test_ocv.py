@@ -16,8 +16,8 @@ if __name__ == '__main__':
     handTrak = HandModelCV(score_thresh=0.6, num_hands_detect=num_hands)
     # handPose = PoseModel(score_thresh=score_thresh, num_hands_detect=num_hands)
 
-    handTrak.load_graph('/home/testuser/obj_det_git/object_tracking/handtracking/hand_inference_graph/frozen_inference_graph.pb',
-                        '/home/testuser/obj_det_git/object_tracking/handtracking2/hand_inference_graph/fixed_graph.pbtxt')
+    handTrak.load_graph('frozen_models/hand_detect_graph.pb',
+                        'frozen_models/hand_detect_graph.pbtxt')
     # handPose.load_graph('/home/testuser/obj_det_git/tf_image_classifier/tf_files/retrained_graph.pb')
 
     video_capture = WebcamVideoStream(src=0,
