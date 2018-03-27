@@ -1,2 +1,0 @@
-model_checkpoint_path: "/home/testuser/tf_tut/image_classifier/models/handgesture-0.0005-20180319-1358-5conv-basic.model"
-all_model_checkpoint_paths: "/home/testuser/tf_tut/image_classifier/models/handgesture-0.0005-20180319-1358-5conv-basic.model"
