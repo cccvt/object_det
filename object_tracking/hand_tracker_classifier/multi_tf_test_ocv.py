@@ -58,5 +58,7 @@ if __name__ == '__main__':
         cv2.imshow('Detection_TF', cv2.cvtColor(image_np, cv2.COLOR_RGB2BGR))
         if cv2.waitKey(25) & 0xFF == ord('q'):
             video_capture.stop()
+            pool_hand.close()
+            pool_hand.terminate()
             cv2.destroyAllWindows()
             break
